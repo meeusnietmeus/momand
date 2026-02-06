@@ -38,7 +38,7 @@ builtin-monitor "eDP-1"
 ```
 Configuration options can be found in the [unfinished project wiki](#)
 
-> [!INFO] 
+> [!NOTE] 
 > This configuration file can be manually managed or via [unfinished project](#)
 
 ## Usage
