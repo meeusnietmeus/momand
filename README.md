@@ -3,11 +3,11 @@
 It monitors your hardware state and dynamically manages output configurations. 
 It is specifically designed to handle transitions between docked (external monitor) and portable (builtin display) states.
 
-# Core functionality
+## Core functionality
 The main use cases are:
 - automatically turn on laptop display if it's the only connected display left, after disconnecting your external monitor.
 
-# Compositor support
+## Compositor support
 `momand` interacts with compositor-specific configuration formats. Currently supported:
 
 | Compositor | Configuration Format |
@@ -15,9 +15,9 @@ The main use cases are:
 | **Niri** | KDL |
 
 ---
-# Configuration
+## Configuration
 
-## CLI
+### CLI
 The daemon expects 2 arguments:
 1. The path to your compositor configuration file where the outputs should be configured. Examples for niri: `outputs.kdl`, `config.kdl`, ...
 2. The path to your configuration file (see next section)
@@ -25,7 +25,7 @@ The daemon expects 2 arguments:
 > [!TIP] 
 > you can use -h or --help to display this information as well
 
-## Configuration file
+### Configuration file
 As aforementioned, the CLI expects the path to your configuration file for moman.
 You'll have to make this file yourself e.g. `~/.config/moman/config.kdl`.
 
