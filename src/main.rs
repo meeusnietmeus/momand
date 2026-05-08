@@ -16,10 +16,6 @@ fn main() {
     let mut app_state = appdata::AppData::default();
     parse_program_args(&mut app_state);
 
-    // This is checked after boot
-    //TODO: only turn on if so desired
-    config_manipulator::niri::modify_niri_config(&app_state.compositor_config_file_path, "eDP-1", true);
-
     infinite_wayland(&mut app_state);
 }
 
@@ -44,8 +40,14 @@ fn infinite_wayland(app_state: &mut appdata::AppData) {
     // registry roundrip for binding to events
     event_queue.roundtrip(app_state).unwrap();
 
+    app_state.init = true;
     loop {
         // check for new (wl_output) events
         event_queue.blocking_dispatch(app_state).unwrap();
+
+        if app_state.init {
+            app_state.apply_startup_config();
+            app_state.init = false;
+        }
     }
 }

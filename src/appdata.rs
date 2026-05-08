@@ -13,13 +13,23 @@ pub struct AppData {
     pub output_names: HashMap<u32, String>,
     pub compositor_config_file_path: String,
     pub config_file_path: String,
+    pub init: bool,
 
-    builtin_screen: Option<String>
+    builtin_screen: Option<String>,
 }
 
 impl AppData {
     pub fn check_for_builtin_monitor(&mut self) {
         self.builtin_screen = momand::config_builtin_monitor(&self.config_file_path)
+    }
+
+    pub fn apply_startup_config(&mut self) {
+        let Some(builtin) = self.builtin_screen.as_deref() else {
+            return;
+        };
+
+        let has_external = self.output_names.values().any(|name| name != builtin);
+        modify_niri_config(&self.compositor_config_file_path, builtin, !has_external);
     }
 }
 
@@ -50,19 +60,25 @@ impl Dispatch<wl_registry::WlRegistry, ()> for AppData {
                 // if race condition occurs where this event fires before Name:
                 state.output_event_binds.retain(|_, global| *global != name);
 
-                let Some(_) = state.output_names.remove(&name) else { return; };
+                let Some(_) = state.output_names.remove(&name) else {
+                    return;
+                };
                 println!("monitor removed from output_names list: {}", name);
 
                 match state.output_names.len() {
                     1 => {
                         let output_name = state.output_names.values().next().unwrap();
                         modify_niri_config(&state.compositor_config_file_path, output_name, true);
-                    },
+                    }
                     0 => {
                         if let Some(monitor_name) = state.builtin_screen.as_deref() {
-                            modify_niri_config(&state.compositor_config_file_path, monitor_name, true);
+                            modify_niri_config(
+                                &state.compositor_config_file_path,
+                                monitor_name,
+                                true,
+                            );
                         }
-                    },
+                    }
                     _ => {}
                 }
             }
